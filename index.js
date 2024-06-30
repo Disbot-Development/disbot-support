@@ -16,12 +16,14 @@ async function main() {
 
     const client = new Disbot({
         intents: [
+            GatewayIntentBits.Guilds,
 			GatewayIntentBits.GuildMessages,
 			GatewayIntentBits.DirectMessages,
 			GatewayIntentBits.MessageContent
         ],
         partials: [
-            Partials.Message
+            Partials.Message,
+            Partials.Channel
         ],
         restTimeOffset: 0,
         allowedMentions: {
