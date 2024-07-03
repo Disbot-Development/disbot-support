@@ -62,7 +62,7 @@ module.exports = class Utils {
      * @generator
      */
 
-        * stateChanger(states) {
+    * stateChanger(states) {
         let i = 0;
 
         while (true) {
