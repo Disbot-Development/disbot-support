@@ -66,13 +66,17 @@ Voici la liste des prérequis afin d'exécuter le projet en local.
 
 Voici la liste des étapes à suivre afin d'exécuter le projet.
 
-2. Cloner le répertoire
+1. Cloner le répertoire
    ```sh
    git clone https://github.com/disbot-development/disbot-support.git
    ```
-3. Installer les dépendances NPM
+2. Installer les dépendances NPM
    ```sh
    npm install
+   ```
+3. Exécuter le code
+   ```sh
+   node .
    ```
 
 <p align="right"><a href="#readme-top">retour en haut</a></p>
