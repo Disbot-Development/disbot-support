@@ -1,4 +1,4 @@
-const { Client, Collection, PermissionFlagsBits, version } = require('discord.js');
+const { Client, Collection, PermissionFlagsBits } = require('discord.js');
 const { createSpinner } = require('nanospinner');
 const Prototypes = require('./Prototypes');
 const Config = require('./Config');
