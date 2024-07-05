@@ -91,30 +91,6 @@ module.exports = class Disbot extends Client {
     get interactions() {
         return [].concat(this.commands.map((command) => command.config), this.contextmenus.map((contextmenu) => contextmenu.config));
     };
-    
-    /**
-     * 
-     * @param {boolean} logging
-     * @returns {true}
-     */
-
-    verifications(logging) {
-        if (version !== require('../../package.json').dependencies['discord.js'].replace(/\^/g, '')) this.logger.throw(`Discord.JS -> Needed version: ${require('../../package.json').dependencies['discord.js']}`);
-        if (this.database.version !== require('../../package.json').dependencies['quick.db'].replace(/\^/g, '')) this.logger.throw(`Quick.DB -> Needed version: ${require('../../package.json').dependencies['discord.js']}`);
-
-        if (!this.buttons) this.logger.throw('Buttons -> Property not found.');
-        if (!this.selectmenus) this.logger.throw('SelectMenus -> Property not found.');
-        if (!this.modals) this.logger.throw('Modals -> Property not found.');
-        if (!this.config) this.logger.throw('Config -> Property not found.');
-        if (!this.utils) this.logger.throw('Utils -> Property not found.');
-        if (!this.database) this.logger.throw('Database -> Property not found.');
-        
-        if (!logging) {
-            this.logger.success(`All the necessary checks have been carried out.`);
-        };
-
-        return true;
-    };
 
     /**
      * 
@@ -239,8 +215,6 @@ module.exports = class Disbot extends Client {
 
     async init() {
         this.loadDatabase();
-        
-        this.verifications();
 
         this.loadButtons();
         this.loadEvents();
