@@ -1,10 +1,10 @@
 const { Client, Collection, PermissionFlagsBits } = require('discord.js');
 const { createSpinner } = require('nanospinner');
-const Prototypes = require('./Prototypes');
+const { QuickDB } = require('quick.db');
+
 const Config = require('./Config');
-const Utils = require('./Utils');
 const Logger = require('./Logger');
-const Database = require('quick.db');
+const Utils = require('./Utils');
 
 module.exports = class Disbot extends Client {
 
@@ -16,13 +16,11 @@ module.exports = class Disbot extends Client {
 
     constructor(options) {
         super(options);
-
-        new Prototypes(this)
     };
 
-    config = new Config(this);
+    config = new Config();
     utils = new Utils(this);
-    logger = new Logger(this);
+    logger = new Logger();
 
     /**
      * 
@@ -43,46 +41,6 @@ module.exports = class Disbot extends Client {
      */
 
     buttons = new Collection();
-    
-    /**
-     * 
-     * @typedef {object} SelectMenuConfig
-     * @property {string} name
-     * @property {PermissionFlagsBits[]} perms
-     * @property {PermissionFlagsBits[]} meperms
-     */
-
-    /**
-     * 
-     * @typedef {object} SelectMenu
-     * @property {SelectMenuConfig} config
-     */
-
-    /**
-     * @type {Collection<string, SelectMenu>}
-     */
-
-    selectmenus = new Collection();
-
-    /**
-     * 
-     * @typedef {object} ModalConfig
-     * @property {string} name
-     * @property {PermissionFlagsBits[]} perms
-     * @property {PermissionFlagsBits[]} meperms
-     */
-
-    /**
-     * 
-     * @typedef {object} Modal
-     * @property {ModalConfig} config
-     */
-
-    /**
-     * @type {Collection<string, Modal>}
-     */
-
-    modals = new Collection();
 
     /**
      * @returns {Collection<string, CommandConfig|ContextMenuConfig>}
@@ -98,7 +56,7 @@ module.exports = class Disbot extends Client {
      */
 
     loadDatabase() {
-        this.database = Database;
+        this.database = new QuickDB();
 
         this.logger.success('The database was linked.');
 
@@ -107,12 +65,11 @@ module.exports = class Disbot extends Client {
 
     /**
      * 
-     * @param {boolean} logging
      * @returns {true}
      */
 
-    loadButtons(logging) {
-        const filesPath = this.utils.getFiles('./src/Interactions/Buttons');
+    loadButtons() {
+        const filesPath = this.utils.getFiles('./src/Interactions/Buttons', ['.js']);
 
         for (const path of filesPath) {
             const button = new (require(`../../${path}`))(this);
@@ -122,9 +79,7 @@ module.exports = class Disbot extends Client {
             this.buttons.set(button.config.name, button);
         };
 
-        if (!logging) {
-            this.logger.success(`${this.buttons.size} Buttons has been loaded.`);
-        };
+        this.logger.success(`${this.buttons.size} Buttons has been loaded.`);
     
         return true;
     };
@@ -135,21 +90,18 @@ module.exports = class Disbot extends Client {
      */
 
     loadEvents() {
-        const filesPath = this.utils.getFiles('./src/Listeners');
+        const filesPath = this.utils.getFiles('./src/Listeners', ['.js']);
 
         for (const path of filesPath) {
             const event = new (require(`../../${path}`))(this);
 
             if (!event.run || !event.config || !event.config.name) this.logger.throw(`The file "${path.split(/\//g)[path.split(/\//g).length - 1]}" doesn't have required data.`);
 
-            switch (path.match(/\w{0,255}\/(\w{0,252}\.js)$/g)[0].split('/')[0]) {
-                case 'Process':
-                    process.on(event.config.name, (...args) => event.run(...args));
-                break;
-                default:
-                    this.on(event.config.name, (...args) => event.run(...args));
-                break;
-            };
+            const parentFolder = path.match(/\w{0,255}\/(\w{0,252}\.js)$/g)[0].split('/')[0];
+
+            if (event.config.name === 'rateLimited') this.rest.on(event.config.name, (...args) => event.run(...args));
+            else if (parentFolder === 'Process') process.on(event.config.name, (...args) => event.run(...args));
+            else this.on(event.config.name, (...args) => event.run(...args));
         };
 
         this.logger.success(`${this._eventsCount} Events has been loaded.\n`);
@@ -159,58 +111,18 @@ module.exports = class Disbot extends Client {
 
     /**
      * 
-     * @returns {true}
+     * @returns {Promise<string>}
      */
 
-    reloadButtons() {
-        this.buttons.clear();
+    loadClient() {
+        this.connection = createSpinner('Connecting Disbot to the Discord API...').start();
 
-        const filesPath = this.utils.getFiles('./src/Interactions/Buttons');
-
-        for (const path of filesPath) {
-            delete require.cache[require.resolve(`../../${path}`)];
-        };
-
-        this.loadButtons(true);
-
-        return true;
+        return this.login(this.config.utils.token);
     };
 
     /**
      * 
-     * @returns {true}
-     */
-
-    reloadAll() {
-        const spinner = createSpinner('Reloading Disbot Support...').start();
-
-        this.verifications(true);
-        this.reloadButtons();
-
-        spinner.success({ text: 'Disbot Support has been reloaded.\n' });
-
-        return true;
-    };
-
-    /**
-     * 
-     * @param {boolean} logging
-     * @returns {Promise<true>}
-     */
-
-    loadClient(logging) {
-        if (!logging) {
-            this.connection = createSpinner('Connecting Disbot Support to the Discord API...').start();
-        };
-
-        this.login(this.config.utils.token);
-
-        return new Promise(() => true);
-    };
-
-    /**
-     * 
-     * @returns {true}
+     * @returns {Promise<string>}
      */
 
     async init() {
@@ -219,10 +131,6 @@ module.exports = class Disbot extends Client {
         this.loadButtons();
         this.loadEvents();
 
-        await this.utils.wait(100);
-
-        this.loadClient();
-
-        return true;
+        return this.loadClient();;
     };
 };

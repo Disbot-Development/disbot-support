@@ -16,7 +16,6 @@ module.exports = class InteractionCreateEvent extends Event {
 
     run (interaction) {
         let int;
-        
         if (interaction.isButton()) int = this.client.buttons.get(interaction.customId);
 
         if (!int) return interaction.reply({

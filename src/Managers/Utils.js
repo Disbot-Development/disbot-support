@@ -15,7 +15,7 @@ module.exports = class Utils {
 
     /**
      * 
-     * @param {number} timeout
+     * @param {Number} timeout
      * @returns {Promise<setTimeout>}
      */
 
@@ -25,21 +25,20 @@ module.exports = class Utils {
 
     /**
      * 
-     * @param {string} path
-     * @returns {string[]}
+     * @param {String} path
+     * @param {String[]} extensions
+     * @returns {String[]}
      */
 
-    getFiles(path) {
-
+    getFiles(path, extensions = []) {
         const files = readdirSync(path);
-
         let result = [];
 
         for (const file of files) {
             const filePath = `${path}/${file}`;
 
-            if (statSync(filePath).isDirectory()) result = result.concat(this.getFiles(filePath));
-            else result.push(filePath);
+            if (statSync(filePath).isDirectory()) result = result.concat(this.getFiles(filePath, extensions));
+            else if (!extensions.length || extensions.some((ext) => filePath.endsWith(ext))) result.push(filePath);
         };
 
         return result;
@@ -47,51 +46,11 @@ module.exports = class Utils {
 
     /**
      * 
-     * @param {number} number
-     * @returns {number}
+     * @param {Number} number
+     * @returns {Number}
      */
 
     formatNumber(number) {
         return `${number}`.padStart(4, '0');
-    };
-
-    /**
-     * 
-     * @param {array} states
-     * @yields {number}
-     * @generator
-     */
-
-    * stateChanger(states) {
-        let i = 0;
-
-        while (true) {
-            let plural;
-            
-            let updatedValue = states[i]['value'].replace(/{\w+}/g, (match) => {
-                switch (match) {
-                    case '{tickets}':
-                        const tickets = this.client.users.cache.filter((user) => user.getData('ticket')).size;
-
-                        plural = tickets > 1;
-
-                        return tickets.toLocaleString('en-US');
-                    case '{plural}':
-                        return plural ? 's' : '';
-                };
-            });
-
-            this.client.user.setPresence({
-                activities: [
-                    {
-                        name: updatedValue,
-                        type: states[i]['type']
-                    }
-                ],
-                status: 'online'
-            });
-    
-            yield i = ++i % states.length;
-        };
     };
 };

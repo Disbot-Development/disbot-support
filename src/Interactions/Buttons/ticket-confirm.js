@@ -14,7 +14,7 @@ module.exports = class TicketConfirmButton extends Button {
      * @param {ButtonInteraction} interaction
      */
 
-    run (interaction) {
+    async run (interaction) {
         interaction.update({
             embeds: [
                 new MessageEmbed()
@@ -39,29 +39,29 @@ module.exports = class TicketConfirmButton extends Button {
             ]
         });
 
-        this.client.addData('ticket.count', 1);
+        await this.client.database.add('ticket.count', 1);
 
         const guild = this.client.guilds.resolve(this.client.config.guild);
 
         guild.channels.create({
-            name: `ticket-${this.client.utils.formatNumber(this.client.getData('ticket.count'))}`,
+            name: `ticket-${this.client.utils.formatNumber(await this.client.database.get('ticket.count'))}`,
             type: ChannelType.GuildText,
-            parent: this.client.config.category
+            parent: this.client.config.tickets.category
         })
         .then(async (channel) => {
-            interaction.user.setData('ticket.channel', channel.id);
+            await this.client.database.set(`${interaction.user.id}.ticket.channel`, channel.id);
             
-            await channel.permissionOverwrites.create(this.client.config.roles.support, {
+            await channel.permissionOverwrites.create(this.client.config.tickets.roles.support, {
                 ViewChannel: true
             });
 
             channel.send({
-                content: `${guild.roles.resolve(this.client.config.roles.support)}`,
+                content: `${guild.roles.resolve(this.client.config.tickets.roles.support)}`,
                 embeds: [
                     new MessageEmbed()
                     .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL({ size: 1024 }) })
-                    .setDescription(interaction.user.getData('ticket.message.content'))
-                    .setImage(interaction.user.getData('ticket.message.image'))
+                    .setDescription(await this.client.database.get(`${interaction.user.id}.ticket.message.content`))
+                    .setImage(await this.client.database.get(`${interaction.user.id}.ticket.message.image`))
                 ],
                 components: [
                     new ActionRowBuilder()

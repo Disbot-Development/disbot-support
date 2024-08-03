@@ -16,7 +16,12 @@ module.exports = class TicketCloseButton extends Button {
      */
 
     async run (interaction) {
-        const user = this.client.users.cache.find((user) => user.getData('ticket.channel') === interaction.channel.id);
+        const users = await Promise.all(this.client.users.cache.map(async (user) => {
+            const ticketChannelId = await this.client.database.get(`${user.id}.ticket.channel`);
+            return { user, ticketChannelId };
+        }));
+
+        const user = users.find(({ ticketChannelId }) => ticketChannelId === interaction.channel.id)?.user;
 
         const transcript = await createTranscript(interaction.channel, {
             limit: -1,
@@ -26,13 +31,13 @@ module.exports = class TicketCloseButton extends Button {
             poweredBy: false
         });
 
-        interaction.guild.channels.resolve(this.client.config.logs).send({
+        interaction.guild.channels.resolve(this.client.config.channels.logs).send({
             files: [transcript]
         });
 
         interaction.channel.delete()
-        .then(() => {
-            user.removeData('ticket');
+        .then(async () => {
+            await this.client.database.delete(`${user.id}.ticket`);
             
             user.send({
                 embeds: [

@@ -14,8 +14,8 @@ module.exports = class TicketRetryButton extends Button {
      * @param {ButtonInteraction} interaction
      */
 
-    run (interaction) {
-        interaction.user.removeData('ticket.message');
+    async run (interaction) {
+        await this.client.database.delete(`${interaction.user.id}.ticket.message`);
 
         interaction.update({
             embeds: [

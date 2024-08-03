@@ -15,7 +15,7 @@ module.exports = class MessageCreateEvent extends Event {
       */
 
 
-    run (message) {
+    async run (message) {
         if (message.type === MessageType.ChannelPinnedMessage && message.author.id === this.client.user.id) message.delete();
 
         if (message.author.bot) return;
@@ -32,13 +32,24 @@ module.exports = class MessageCreateEvent extends Event {
         });
 
         const guild = this.client.guilds.resolve(this.client.config.guild);
-        const user = this.client.users.cache.find((user) => user.getData('ticket.channel') === message.channel.id);
+        
+        const users = await Promise.all(this.client.users.cache.map(async (user) => {
+            const ticketChannelId = await this.client.database.get(`${user.id}.ticket.channel`);
+            return { user, ticketChannelId };
+        }));
+
+        const user = users.find(({ ticketChannelId }) => ticketChannelId === message.channel.id)?.user;
         
         if (message.channel.type === ChannelType.DM) {
-            if (message.author.getData('ticket.channel')) {
-                message.react(this.client.config.emojis.yes);
-                
-                guild.channels.resolve(message.author.getData('ticket.channel')).send({
+            if (await this.client.database.get(`${message.author.id}.ticket.channel`)) {
+                const channel = guild.channels.resolve(await this.client.database.get(`${message.author.id}.ticket.channel`));
+
+                if (!channel) {
+                    await this.client.database.delete(`${message.author.id}.ticket`);
+                    return this.client.emit('messageCreate', message);
+                };
+
+                guild.channels.resolve(await this.client.database.get(`${message.author.id}.ticket.channel`)).send({
                     embeds: [
                         new MessageEmbed()
                         .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL({ size: 1024 }) })
@@ -46,12 +57,18 @@ module.exports = class MessageCreateEvent extends Event {
                         .setImage(message.attachments.first()?.proxyURL)
                     ]
                 })
+                .then(() => {
+                    message.react(this.client.config.emojis.yes);
+                })
+                .catch(() => {
+                    message.react(this.client.config.emojis.no);
+                });
             };
 
-            if (message.author.getData('ticket.message')) return;
+            if (await this.client.database.get(`${message.author.id}.ticket.message`)) return;
 
-            message.author.setData('ticket.message.content', message.content.trim());
-            if (message.attachments.size) message.author.setData('ticket.message.image', message.attachments.first()?.proxyURL);
+            await this.client.database.set(`${message.author.id}.ticket.message.content`, message.content.trim());
+            if (message.attachments.size) await this.client.database.set(`${message.author.id}.ticket.message.image`, message.attachments.first()?.proxyURL);
 
             message.reply({
                 embeds: [
@@ -74,8 +91,6 @@ module.exports = class MessageCreateEvent extends Event {
                 ]
             });
         } else if (user) {
-            message.react(this.client.config.emojis.yes);
-
             user.send({
                 embeds: [
                     new MessageEmbed()
@@ -83,6 +98,12 @@ module.exports = class MessageCreateEvent extends Event {
                     .setDescription(message.content.trim())
                     .setImage(message.attachments.first()?.proxyURL)
                 ]
+            })
+            .then(() => {
+                message.react(this.client.config.emojis.yes);
+            })
+            .catch(() => {
+                message.react(this.client.config.emojis.no);
             });
         };
     };
