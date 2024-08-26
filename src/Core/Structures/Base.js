@@ -1,10 +1,10 @@
-const client = require('../../../index');
+const Bot = require('../Bot');
 
 module.exports = class Base {
 
     /**
-     * The Base constructor.
-     * @param {client} client The client
+     * 
+     * @param {Bot} client
      * @constructor
      */
 

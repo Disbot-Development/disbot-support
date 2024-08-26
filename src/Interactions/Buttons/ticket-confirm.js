@@ -1,6 +1,7 @@
-const Button = require('../../Managers/Structures/Button');
 const { ButtonInteraction, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } = require('discord.js');
-const MessageEmbed = require('../../Managers/MessageEmbed');
+
+const MessageEmbed = require('../../Commons/MessageEmbed');
+const Button = require('../../Core/Structures/Button');
 
 module.exports = class TicketConfirmButton extends Button {
     constructor(client) {
@@ -18,7 +19,7 @@ module.exports = class TicketConfirmButton extends Button {
         interaction.update({
             embeds: [
                 new MessageEmbed()
-                .setTitle('Disbot Support')
+                .setTitle(this.client.config.username)
                 .setDescription('Votre message a été transmis a l\'équipe support. Une réponse vous sera donnée d\'ici peu de temps.')
                 .setColor(Colors.Green)
             ],

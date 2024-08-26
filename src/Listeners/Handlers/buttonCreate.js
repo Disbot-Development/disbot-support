@@ -1,7 +1,8 @@
-const Event = require('../../Managers/Structures/Event');
-const Button = require('../../Managers/Structures/Button');
-const MessageEmbed = require('../../Managers/MessageEmbed');
 const { ButtonInteraction } = require('discord.js');
+
+const MessageEmbed = require('../../Commons/MessageEmbed');
+const Button = require('../../Core/Structures/Button');
+const Event = require('../../Core/Structures/Event');
 
 module.exports = class ButtonCreateEvent extends Event {
     constructor(client) {
@@ -16,11 +17,11 @@ module.exports = class ButtonCreateEvent extends Event {
      * @param {Button} button
      */
 
-    run (interaction, button) {
+    async run (interaction, button) {
         if ((interaction.message.interaction?.user?.id || interaction.user.id) !== interaction.user.id) return;
 
         try {
-            button.run(interaction);
+            await button.run(interaction);
         } catch(error) {
             interaction.reply({
                 embeds: [
@@ -31,7 +32,7 @@ module.exports = class ButtonCreateEvent extends Event {
                 ephemeral: true
             });
 
-            this.client.emit('buttonError', interaction, error);
+            this.client.emit('interactionError', error);
         };
     };
 };

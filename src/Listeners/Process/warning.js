@@ -1,9 +1,10 @@
-const Event = require('../../Managers/Structures/Event');
+const Event = require('../../Core/Structures/Event');
 
 module.exports = class ProcessWarningEvent extends Event {
     constructor(client) {
         super(client, {
-            name: 'warning'
+            name: 'warning',
+            process: true
         });
     };
 
@@ -13,6 +14,6 @@ module.exports = class ProcessWarningEvent extends Event {
      */
 
     run (error) {
-        this.client.logger.error(`${error}\n`);
+        this.client.logger.error(`Warning: ${`${error.stack ? error.stack : error.message}`.red}\n`);
     };
 };

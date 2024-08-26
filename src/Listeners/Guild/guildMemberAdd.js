@@ -1,6 +1,7 @@
-const Event = require('../../Managers/Structures/Event');
 const { GuildMember, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const MessageEmbed = require('../../Managers/MessageEmbed');
+
+const MessageEmbed = require('../../Commons/MessageEmbed');
+const Event = require('../../Core/Structures/Event');
 
 module.exports = class GuildMemberAddEvent extends Event {
     constructor(client) {
@@ -15,11 +16,11 @@ module.exports = class GuildMemberAddEvent extends Event {
       */
 
 
-    run (member) {
+    async run (member) {
         member.send({
             embeds: [
                 new MessageEmbed()
-                .setTitle('Disbot Support')
+                .setTitle(this.client.config.username)
                 .setDescription(
                     `${this.client.config.emojis.support}・**1. Support:**\n` +
                     `> - Si vous souhaitez obtenir de l'aide de la part de notre équipe support, merci de m'envoyer un message récapitulant votre problème (veillez à ce que le message contient toutes les informations nécessaires).\n` +

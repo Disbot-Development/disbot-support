@@ -1,10 +1,12 @@
-const Event = require('../../Managers/Structures/Event');
 const { RateLimitData } = require('discord.js');
+
+const Event = require('../../Core/Structures/Event');
 
 module.exports = class RateLimitEvent extends Event {
     constructor(client) {
         super(client, {
-            name: 'rateLimit'
+            name: 'rateLimit',
+            rest: true
         });
     };
 
@@ -14,6 +16,6 @@ module.exports = class RateLimitEvent extends Event {
      */
 
     run (data) {
-        this.client.logger.error(`Rate limited for: ${`${Math.floor(data.timeout / 1000 / 60)} minute${Math.floor(data.timeout / 1000 / 60) > 1 ? 's' : ''}`.red}\n`);
+        this.client.logger.error(`Rate limited for: ${`${Math.floor(data.retryAfter / 1000 / 60)} minute${Math.floor(data.retryAfter / 1000 / 60) > 1 ? 's' : ''}`.red}\n`);
     };
 };

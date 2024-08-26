@@ -1,6 +1,7 @@
-const Event = require('../../Managers/Structures/Event');
 const { Message, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageType } = require('discord.js');
-const MessageEmbed = require('../../Managers/MessageEmbed');
+
+const MessageEmbed = require('../../Commons/MessageEmbed');
+const Event = require('../../Core/Structures/Event');
 
 module.exports = class MessageCreateEvent extends Event {
     constructor(client) {
@@ -23,7 +24,7 @@ module.exports = class MessageCreateEvent extends Event {
         if (message.mentions.has(this.client.user, { ignoreEveryone: true, ignoreRepliedUser: true, ignoreRoles: true }) && message.guild) return message.reply({
             embeds: [
                 new MessageEmbed()
-                .setTitle('Disbot Support')
+                .setTitle(this.client.config.username)
                 .setDescription(
                     `${this.client.config.emojis.help} Vous m'avez mentionné ?\n` +
                     `${this.client.config.emojis.support} Afin d'obtenir de l'aide, envoyez-moi un message privé ! Vous recevrez une réponse de notre équipe support dans les plus brefs délais !`
@@ -73,7 +74,7 @@ module.exports = class MessageCreateEvent extends Event {
             message.reply({
                 embeds: [
                     new MessageEmbed()
-                    .setTitle('Disbot Support')
+                    .setTitle(this.client.config.username)
                     .setDescription('Tentez-vous de créer un ticket par messages privés ? Si c\'est votre cas, vérifiez que votre message contient toutes informations que vous souhaitez transmettre à l\'équipe support.')
                 ],
                 components: [

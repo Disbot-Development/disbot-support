@@ -1,12 +1,17 @@
-require('colors');
 require('dotenv').config();
+require('colors');
 
-const Disbot = require('./src/Managers/Disbot');
 const { GatewayIntentBits, Partials } = require('discord.js');
 
-async function main() {
+const Bot = require('./Core/Bot');
 
-    const client = new Disbot({
+/**
+ *
+ * @returns {Promise<undefined>}
+ */
+
+async function main() {
+    const client = new Bot({
         intents: [
             GatewayIntentBits.Guilds,
 			GatewayIntentBits.GuildMessages,
@@ -23,10 +28,11 @@ async function main() {
         }
     });
 
-    client.options.allowedMentions.roles = Object.values(client.config.tickets.roles).map((id) => id);
+    client.options.allowedMentions.roles = Object.values(client.config.tickets.roles);
     client.options.allowedMentions.users = client.config.utils.devs;
 
-    await client.init();
+    await client.loadAll();
+    await client.loadClient();
 
     module.exports = client;
 };

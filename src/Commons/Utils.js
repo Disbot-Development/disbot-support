@@ -1,17 +1,6 @@
 const { readdirSync, statSync } = require('fs');
-const client = require('../../index');
 
 module.exports = class Utils {
-
-    /**
-     * 
-     * @param {client} client
-     * @constructor
-     */
-
-    constructor(client) {
-        this.client = client;
-    };
 
     /**
      * 
@@ -26,7 +15,7 @@ module.exports = class Utils {
     /**
      * 
      * @param {String} path
-     * @param {String[]} extensions
+     * @param {String[]} [extensions]
      * @returns {String[]}
      */
 

@@ -1,4 +1,4 @@
-const Event = require('../../Managers/Structures/Event');
+const Event = require('../../Core/Structures/Event');
 
 module.exports = class ErrorEvent extends Event {
     constructor(client) {
@@ -13,6 +13,6 @@ module.exports = class ErrorEvent extends Event {
      */
 
     run (error) {
-        this.client.logger.error(`Error: ${`${error}`.red}\n`);
+        this.client.logger.error(`Client Error: ${`${error.stack ? error.stack : error.message}`.red}\n`);
     };
 };

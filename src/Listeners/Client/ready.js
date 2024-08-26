@@ -1,4 +1,4 @@
-const Event = require('../../Managers/Structures/Event');
+const Event = require('../../Core/Structures/Event');
 
 module.exports = class ReadyEvent extends Event {
     constructor(client) {
@@ -8,16 +8,12 @@ module.exports = class ReadyEvent extends Event {
     };
     
     async run () {
-        this.client.connection.success({ text: `Disbot Support has been connected to the Discord API.` });
-
-        this.client.user.setPresence({
-            activities: [
-                {
-                    name: this.client.config.presence.name,
-                    type: this.client.config.presence.type
-                }
-            ],
-            status: this.client.config.presence.status
+        this.client.connection.success({ text: `${this.client.config.username} has been connected to the Discord API.` });
+        
+        this.client.loadPresence({
+            name: this.client.config.utils.presence.name,
+            type: this.client.config.utils.presence.type,
+            status: this.client.config.utils.presence.status
         });
     };
 };

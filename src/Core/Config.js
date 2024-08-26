@@ -1,4 +1,4 @@
-const { Colors, ActivityType, PresenceUpdateStatus } = require('discord.js');
+const { ActivityType, PresenceUpdateStatus, Colors } = require('discord.js');
 
 module.exports = class Config {
 
@@ -9,18 +9,16 @@ module.exports = class Config {
 
     constructor() {
         this.username = 'Disbot Support';
-        this.dev = 'sey.ioo';
 
         this.utils = {
             token: process.env.TOKEN,
             devs: ['1218940758061617153'],
-            version: '1.5.0'
-        };
-
-        this.presence = {
-            name: 'Regarde les messages privés',
-            type: ActivityType.Custom,
-            status: PresenceUpdateStatus.Online
+            version: '1.1.0',
+            presence: {
+                name: 'Regarde les messages privés',
+                type: ActivityType.Custom,
+                status: PresenceUpdateStatus.Online
+            }
         };
 
         this.guild = '1238444132704194692';
@@ -37,7 +35,7 @@ module.exports = class Config {
         };
 
         this.embeds = {
-            footer: `${this.username} ©️ ${new Date().getFullYear()}・Fait avec ❤️ par ${this.dev}`,
+            footer: `${this.username} ©️ ${new Date().getFullYear()}・Propulsé par Disbot Development`,
             color: Colors.Blurple
         };
 

@@ -1,7 +1,8 @@
-const Button = require('../../Managers/Structures/Button');
-const { ButtonInteraction, Colors } = require('discord.js');
-const MessageEmbed = require('../../Managers/MessageEmbed');
 const { createTranscript } = require('discord-html-transcripts');
+const { ButtonInteraction, Colors } = require('discord.js');
+
+const MessageEmbed = require('../../Commons/MessageEmbed');
+const Button = require('../../Core/Structures/Button');
 
 module.exports = class TicketCloseButton extends Button {
     constructor(client) {
@@ -42,11 +43,12 @@ module.exports = class TicketCloseButton extends Button {
             user.send({
                 embeds: [
                     new MessageEmbed()
-                    .setTitle('Disbot Support')
+                    .setTitle(this.client.config.username)
                     .setDescription('Votre ticket vient d\'être clôturé. N\'hésitez pas à nous solliciter de nouveau si vous avez besoin de notre aide !')
                     .setColor(Colors.Red)
                 ]
-            });
+            })
+            .catch(() => 0);
         });
     };
 };

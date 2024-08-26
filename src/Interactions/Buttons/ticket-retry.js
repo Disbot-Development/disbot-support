@@ -1,6 +1,7 @@
-const Button = require('../../Managers/Structures/Button');
 const { ButtonInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } = require('discord.js');
-const MessageEmbed = require('../../Managers/MessageEmbed');
+
+const MessageEmbed = require('../../Commons/MessageEmbed');
+const Button = require('../../Core/Structures/Button');
 
 module.exports = class TicketRetryButton extends Button {
     constructor(client) {
@@ -20,7 +21,7 @@ module.exports = class TicketRetryButton extends Button {
         interaction.update({
             embeds: [
                 new MessageEmbed()
-                .setTitle('Disbot Support')
+                .setTitle(this.client.config.username)
                 .setDescription('Vous pouvez réécrire votre message. Pensez à indiquer toutes les informations importantes dans votre message afin d\'alléger la tâche de l\'équipe support.')
                 .setColor(Colors.DarkerGrey)
             ],

@@ -7,7 +7,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/disbot-development/disbot-support">
-    <img src="src/Images/Disbot Support.png" alt="Logo" width="128" height="128">
+    <img src="assets/imgs/logo.png" alt="Logo" width="128" height="128">
   </a>
 
   <h3 align="center">Disbot Support</h3>
@@ -89,4 +89,4 @@ Voici la liste des étapes à suivre afin d'exécuter le projet.
 [forks-url]: https://github.com/disbot-development/disbot-support/network/members
 [stars-shield]: https://img.shields.io/github/stars/disbot-development/disbot-support.svg?style=for-the-badge
 [stars-url]: https://github.com/disbot-development/disbot-support/stargazers
-[product-screenshot]: src/Images/White_Blurple_Banner.png
+[product-screenshot]: assets/imgs/banner.png
